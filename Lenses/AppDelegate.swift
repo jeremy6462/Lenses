@@ -16,7 +16,27 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [NSObject: AnyObject]?) -> Bool {
         // Override point for customization after application launch.
+        
+        application.registerUserNotificationSettings(UIUserNotificationSettings(types:  [.alert, .badge, .sound], categories: nil))
+        
         return true
+    }
+    
+    func application(_ application: UIApplication, handleActionWithIdentifier identifier: String?,
+                     for notification: UILocalNotification, completionHandler: () -> Void) {
+        print("handleActionWithIdentifier: \(identifier)")
+        print("handleActionWithIdentifier: \(notification)")
+        if let identifier = identifier {
+            if identifier == "contacts" {
+                let currentContactDays = UserDefaults.standard.integer(forKey: "contactsCount")
+                UserDefaults.standard.set(currentContactDays+1, forKey: "contactsCount")
+            }
+        }
+        completionHandler()
+    }
+    
+    func application(_ application: UIApplication, didReceive notification: UILocalNotification) {
+        print("didReceive: \(notification)")
     }
 
     func applicationWillResignActive(_ application: UIApplication) {
@@ -31,6 +51,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 
     func applicationWillEnterForeground(_ application: UIApplication) {
         // Called as part of the transition from the background to the active state; here you can undo many of the changes made on entering the background.
+        let vc = self.window?.rootViewController as! ViewController
+        vc.updateConcacts()
     }
 
     func applicationDidBecomeActive(_ application: UIApplication) {
